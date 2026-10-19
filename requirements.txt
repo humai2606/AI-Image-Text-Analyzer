@@ -3,4 +3,5 @@ streamlit
 pillow
 pytesseract
 numpy
+pandas
 sentence-transformers
