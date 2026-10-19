@@ -2,6 +2,8 @@
 
 An AI-powered image text analysis application built using Python and Streamlit. It uses Tesseract OCR to extract text from uploaded images, evaluates OCR confidence, generates text embeddings, and visualizes illustrative attention scores.
 
+APP LINK:https://ai-image-text-analyzer-pfz7qxtwpjgg4kkvpjqilk.streamlit.app/
+
 ## Features
 
 - Upload PNG, JPG, and JPEG images.
