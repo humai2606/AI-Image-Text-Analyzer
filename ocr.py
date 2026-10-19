@@ -1,35 +1,22 @@
-
+import shutil
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = (
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-)
+from PIL import Image
 
 def extract_text(image):
+    tesseract_path = shutil.which("tesseract")
+
+    if not tesseract_path:
+        raise FileNotFoundError(
+            "Tesseract OCR is not installed. "
+            "Check that packages.txt contains tesseract-ocr."
+        )
+
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
+
     text = pytesseract.image_to_string(image)
-
-    data = pytesseract.image_to_data(
-        image,
-        output_type=pytesseract.Output.DICT
-    )
-
-    words = []
-    confidences = []
-
-    for word, confidence in zip(data["text"], data["conf"]):
-        word = word.strip()
-
-        if word and float(confidence) >= 0:
-            words.append(word)
-            confidences.append(float(confidence))
-
-    average_confidence = (
-        sum(confidences) / len(confidences)
-        if confidences else 0
-    )
+    words = text.split()
 
     return {
         "text": text,
-        "words": words,
-        "word_count": len(words),
-        "average_confidence": average_confidence
+        "words": words
     }
