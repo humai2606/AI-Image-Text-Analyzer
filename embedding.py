@@ -1,39 +1,35 @@
-from sentence_transformers import SentenceTransformer
-import numpy as np
+
+import os
+import shutil
+import pytesseract
+from PIL import Image
 
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+def extract_text(image):
+    # Find Tesseract on the current system
+    tesseract_path = shutil.which("tesseract")
 
+    if tesseract_path:
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
+    elif os.name == "nt":
+        # Local Windows installation
+        windows_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-def create_embeddings(text):
-    """
-    Convert text into sentence embeddings.
-    """
+        if os.path.exists(windows_path):
+            pytesseract.pytesseract.tesseract_cmd = windows_path
+        else:
+            raise FileNotFoundError(
+                "Tesseract OCR is not installed or not found."
+            )
+    else:
+        raise FileNotFoundError(
+            "Tesseract OCR was not found. Check packages.txt."
+        )
 
-    embedding = model.encode(text)
+    text = pytesseract.image_to_string(image)
+    words = text.split()
 
-    return embedding
-
-
-def get_embedding_dimension():
-    """
-    Return the size of the generated embedding vector.
-    """
-
-    return model.get_sentence_embedding_dimension()
-
-
-if __name__ == "__main__":
-
-    text = "Artificial Intelligence is changing the world."
-
-    embedding = create_embeddings(text)
-
-    print("Input text:")
-    print(text)
-
-    print("\nEmbedding dimension:")
-    print(len(embedding))
-
-    print("\nFirst 10 embedding values:")
-    print(np.round(embedding[:10], 4))
+    return {
+        "text": text,
+        "words": words
+    }
